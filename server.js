@@ -1,21 +1,58 @@
-// Dependencies
+// // Dependencies
+// var express = require("express");
+// var mongojs = require("mongojs");
+// var axios = require("axios");
+// var cheerio = require("cheerio");
+
+// // Initialize Express
+// var app = express();
+
+// // Database configuration
+// var databaseUrl = "scraper";
+// var collections = ["MongoNews"];
+// // Hook mongojs configuration to the db variable
+// var db = mongojs(databaseUrl, collections);
+// db.on("error", function(error) {
+//   console.log("Database Error:", error);
+
+
+//=============================================================
+// MongoLAB...
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/MongoNews";
+
+
 var express = require("express");
-var mongojs = require("mongojs");
+var logger = require("morgan");
+var mongoose = require("mongoose");
+
+// Our scraping tools
+// Axios is a promised-based http library, similar to jQuery's Ajax method
+// It works on the client and on the server
 var axios = require("axios");
 var cheerio = require("cheerio");
+
+// Require all models
+var db = require("./models");
+
+var PORT = 3000;
 
 // Initialize Express
 var app = express();
 
-// Database configuration
-var databaseUrl = "scraper";
-var collections = ["MongoNews"];
+// Configure middleware
 
-// Hook mongojs configuration to the db variable
-var db = mongojs(databaseUrl, collections);
-db.on("error", function(error) {
-  console.log("Database Error:", error);
-});
+// Use morgan logger for logging requests
+app.use(logger("dev"));
+// Parse request body as JSON
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+// Make public a static folder
+app.use(express.static("public"));
+
+// Connect to the Mongo DB
+// mongoose.connect("mongodb://localhost/scraper", { useNewUrlParser: true });
+mongoose.connect(MONGODB_URI);
+// });
 
 //......................................................
 
@@ -46,7 +83,7 @@ app.get("/scrape", (req,res) => {
           title: title,
           link: link,
           summary: summary, 
-          img: img
+          // img: img
         };
         results.push(scrape);
 
